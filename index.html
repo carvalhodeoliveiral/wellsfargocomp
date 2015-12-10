@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wellsfargocomp by carvalhodeoliveiral</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/carvalhodeoliveiral/wellsfargocomp">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/carvalhodeoliveiral/wellsfargocomp/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/carvalhodeoliveiral/wellsfargocomp/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Wellsfargocomp</h1>
+          <p>Analytics Competition Wells Fargo</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/carvalhodeoliveiral">carvalhodeoliveiral</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
+
+<p>During all the competition the objective of the team was to do a ranking of the best evaluated and well commented banks from the four banks in the data base that was gave to us. Since the beginning of the analysis was noticed that the type of social media was described in the data frame, and was divided in two: Facebook and Twitter.</p>
+
+<p>Both social media had short info about: BankA, BankB, BankC and bankD. And was our job to discriminate if they were positive or negative. So the analysis that was choose to do over the data frame was basically to discovery if the Facebook comments or tweets were good or not.</p>
+
+<hr>
+
+<h2>
+<a id="how-the-analysis-work" class="anchor" href="#how-the-analysis-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How the analysis work?</h2>
+
+<p>What we done for evaluating if the users comments were good or bad was just comparing if words used in those comments were good or bad, based on that we could generate a score, and this score based in a average determinated by us, would classify the comment as: Very positive, average and very negative. </p>
+
+<p>Obviously the commentaries that had very good or very bad grades would be the ones that would call more of all attention. But thinking that our code may have failures in this kind of approach we decided to do a human evaluation of the code by taking a small part of the data frame and evaluate them personally, and see if our evaluation would match with the result that the code was giving to us.</p>
+
+<p>See how the code works bellow.</p>
+
+<pre><code>  score.sentiment = function(sentences, pos.words, neg.words, .progress='none')
+  {
+    require(plyr)
+    require(stringr)
+
+    # we got a vector of sentences. plyr will handle a list
+    # or a vector as an "l" for us
+    # we want a simple array ("a") of scores back, so we use 
+    # "l" + "a" + "ply" = "laply":
+    scores = laply(sentences, function(sentence, pos.words, neg.words) {
+
+   # clean up sentences with R's regex-driven global substitute, gsub():
+    sentence = gsub('[[:punct:]]', '', sentence)
+    sentence = gsub('[[:cntrl:]]', '', sentence)
+    sentence = gsub('\\d+', '', sentence)
+    # and convert to lower case:
+    sentence = tolower(sentence)
+
+     # split into words. str_split is in the stringr package
+     word.list = str_split(sentence, '\\s+')
+     # sometimes a list() is one level of hierarchy too much
+     words = unlist(word.list)
+
+     # compare our words to the dictionaries of positive &amp; negative terms
+     pos.matches = match(words, pos.words)
+     neg.matches = match(words, neg.words)
+
+     # match() returns the position of the matched term or NA
+     # we just want a TRUE/FALSE:
+     pos.matches = !is.na(pos.matches)
+     neg.matches = !is.na(neg.matches)
+
+     # and conveniently enough, TRUE/FALSE will be treated as 1/0 by sum():
+     score = sum(pos.matches) - sum(neg.matches)
+
+     return(score)
+   }, pos.words, neg.words, .progress=.progress )
+
+    scores.df = data.frame(score=scores, text=sentences)
+    return(scores.df)
+ }
+</code></pre>
+
+<hr>
+
+<h2>
+<a id="approach-and-methodology" class="anchor" href="#approach-and-methodology" aria-hidden="true"><span class="octicon octicon-link"></span></a>Approach and Methodology</h2>
+
+<p>Several initial approaches were tried with the body of consumer content; the most
+meaningful analysis came from comparative methods. The specific procedures we used to obtain
+our results are detailed herein.</p>
+
+<p>In the coding process, a random sample (~10,000 posts) of the consumer content was
+divided into 5 categories: content mentioning BankA(1), BankB(2), BankC(3), BankD(4), or
+none of the four banks(0). By using a sentiment analysis patch in the code, content was
+categorized as positive or negative, and each of the 5 categories was then scored according to
+their amount of positive vs. negative content. This gives a rough idea of how consumers
+perceive each bank on a large scale.</p>
+
+<p>For a deeper analysis, a semi­random sample of 80 content posts was taken and given
+extra classifications according to topic, cause of post, and audience. This sample was obtained by
+taking a random sample of 100 content posts from the first four categories, keeping with the
+comparative method used so far, and then determining which posts out of the 100 were
+meaningful. The information gleaned from this analysis, combined with our coded analysis,
+provided us with a cohesive narrative regarding why people post, what they post about, and who
+their audience is, and how each bank is regarded comparatively.</p>
+
+<hr>
+
+<h2>
+<a id="the-graphics" class="anchor" href="#the-graphics" aria-hidden="true"><span class="octicon octicon-link"></span></a>The graphics</h2>
+
+<p>The graphics that were created by the R code are a visual representation of a sample of 10,000 comments of the data frame. And were made 2 kind of graphics: One that is showing the overall of the comment scores for the each one o the banks, and another one for each one of the social networks. In the bank’s graphics you can see that they are shown as 0, 1, 2, 3 and 4.</p>
+
+<p>The 0 are for those comments that did not have any bank informed or have multiple banks commented on. The 1 is the bankA, 2 the bankB, 3 the bankC and at last 4 the bankD.
+(You can see the graphics that were generated bellow. And the code that created those.)</p>
+
+<pre><code>meanscore = tapply(scores$score, scores$mediatype, mean)
+df.plot = data.frame(mediatype=names(meanscore), meanscore=meanscore)
+df.plot$mediatypes &lt;- reorder(df.plot$mediatype, df.plot$meanscore)
+
+ggplot(df.plot, aes(x = factor(mediatypes), y = meanscore, fill=mediatypes)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols[order(df.plot$meanscore)]) +
+  labs(title = "Average Sentiment Score") + 
+  xlab('Media Type') + ylab('Average Score')
+
+#Avarage score for each bank
+meanscore.bank = tapply(scores$score, scores$bank, mean)
+df.plot.bank = data.frame(bank=names(meanscore.bank), meanscore.bank=meanscore.bank)
+df.plot.bank$bank &lt;- reorder(df.plot.bank$bank, df.plot.bank$meanscore)
+
+ggplot(df.plot.bank, aes(x = factor(bank), y = meanscore.bank, fill=bank)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols2[order(df.plot.bank$meanscore)]) +
+  labs(title = "Average Sentiment Score For Each Bank") + 
+  xlab('Banks') + ylab('Average Score')
+
+# barplot of average very positive
+
+mediatype_pos = ddply(scores, .(mediatype), summarise, mean_pos=mean(very.pos))
+mediatype_pos$mediatypes &lt;- reorder(mediatype_pos$mediatype, mediatype_pos$mean_pos)
+
+ggplot(mediatype_pos, aes(x = factor(mediatypes), y = mediatype_pos$mean_pos, fill=mediatypes)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols[order(df.plot$meanscore)]) +
+  labs(title = "Average Very Positive Sentiment Score") + 
+  xlab('Media Type') + ylab('Average Score')
+
+#Avarage very positive score for each bank
+#TODO
+banks_pos = ddply(scores, .(bank), summarise, mean_pos=mean(very.pos))
+banks_pos$bank &lt;- reorder(banks_pos$bank, banks_pos$mean_pos)
+
+ggplot(banks_pos, aes(x = factor(bank), y = banks_pos$mean_pos, fill=bank)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols2[order(df.plot.bank$meanscore.bank)]) +
+  labs(title = "Average Very Positive Sentiment Score For Each Bank") + 
+   xlab('Banks') + ylab('Average Score')
+
+
+
+#Negative Words avarage
+mediatype_neg = ddply(scores, .(mediatype), summarise, mean_pos=mean(very.neg))
+mediatype_neg$mediatypes &lt;- reorder(mediatype_pos$mediatype, mediatype_pos$mean_pos)
+
+ggplot(mediatype_pos, aes(x = factor(mediatypes), y = mediatype_neg$mean_pos, fill=mediatypes)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols[order(df.plot$meanscore)]) +
+  labs(title = "Average Very Negative Sentiment Score") + 
+  xlab('Media Type') + ylab('Average Score')
+
+
+# Negative words avarage for each bank
+banks_neg = ddply(scores, .(bank), summarise, mean_pos=mean(very.neg))
+banks_neg$bank &lt;- reorder(banks_neg$bank, banks_neg$mean_pos)
+
+ggplot(banks_neg, aes(x = factor(bank), y = banks_neg$mean_pos, fill=bank)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=cols2[order(df.plot.bank$meanscore.bank)]) +
+  labs(title = "Average Very Negative Sentiment Score For Each Bank") + 
+  xlab('Banks') + ylab('Average Score')
+</code></pre>
+
+<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot05.png" alt="Graphic 01">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot06.png" alt="Graphic 02">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot08.png" alt="Graphic 03"></p>
+
+<p>Also there were made 4 word clouds for each one of the banks with the words that appeared the most in the comments of each of the banks.
+(See the word clouds and the code bellow.)</p>
+
+<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot.png" alt="wordcloud 01">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot02.png" alt="wordcloud 02"></p>
+
+<hr>
+
+<h2>
+<a id="the-analysis-could-be-better" class="anchor" href="#the-analysis-could-be-better" aria-hidden="true"><span class="octicon octicon-link"></span></a>The analysis could be better?</h2>
+
+<p>This kind of analysis that was used in this project was really simple if you look at it. It was a simple cross data frame validation. If we saw any words that we define as bad, give the code a bad score, if we see a word that we define as good give the comment a good score. We are just looking inside every comment to see if there is bad or good words.</p>
+
+<p>But today there is better ways to make this kind of sentiment analysis. And the way to do that is evaluating the comments semantically and not just syntactically. Using some libraries for R or Python we could have done some semantic approach of the comments looking for to see if the whole comment is or not good. 
+For example:</p>
+
+<pre><code>* If one of the comments was: “The bankA is not a good bank”
+</code></pre>
+
+<p>Our current code would probably treat that as an irrelevant comment, since you have a negative word (not) and a positive word (good), but if we have used some libraries that treated the comments and words as vectors, the good analysis would give us back a bigger vector that would related the word “not” and the word “good”, and it would understand that the combination of those two is a negative thing.</p>
+
+<hr>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
