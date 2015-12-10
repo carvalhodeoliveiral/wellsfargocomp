@@ -45,8 +45,6 @@
 
 <p>Both social media had short info about: BankA, BankB, BankC and bankD. And was our job to discriminate if they were positive or negative. So the analysis that was choose to do over the data frame was basically to discovery if the Facebook comments or tweets were good or not.</p>
 
-<hr>
-
 <h2>
 <a id="how-the-analysis-work" class="anchor" href="#how-the-analysis-work" aria-hidden="true"><span class="octicon octicon-link"></span></a>How the analysis work?</h2>
 
@@ -99,8 +97,6 @@
  }
 </code></pre>
 
-<hr>
-
 <h2>
 <a id="approach-and-methodology" class="anchor" href="#approach-and-methodology" aria-hidden="true"><span class="octicon octicon-link"></span></a>Approach and Methodology</h2>
 
@@ -122,8 +118,6 @@ comparative method used so far, and then determining which posts out of the 100 
 meaningful. The information gleaned from this analysis, combined with our coded analysis,
 provided us with a cohesive narrative regarding why people post, what they post about, and who
 their audience is, and how each bank is regarded comparatively.</p>
-
-<hr>
 
 <h2>
 <a id="the-graphics" class="anchor" href="#the-graphics" aria-hidden="true"><span class="octicon octicon-link"></span></a>The graphics</h2>
@@ -200,17 +194,43 @@ ggplot(banks_neg, aes(x = factor(bank), y = banks_neg$mean_pos, fill=bank)) +
   xlab('Banks') + ylab('Average Score')
 </code></pre>
 
-<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot05.png" alt="Graphic 01">
-<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot06.png" alt="Graphic 02">
-<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot08.png" alt="Graphic 03"></p>
+<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot05.png" alt="">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot06.png" alt="">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot08.png" alt=""></p>
 
 <p>Also there were made 4 word clouds for each one of the banks with the words that appeared the most in the comments of each of the banks.
 (See the word clouds and the code bellow.)</p>
 
-<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot.png" alt="wordcloud 01">
-<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot02.png" alt="wordcloud 02"></p>
+<pre><code>createWordCloud = function(dataset){
 
-<hr>
+  corpus &lt;- Corpus(DataframeSource(dataset))
+
+  corpus &lt;- tm_map(corpus, removeWords, c("twit_hndl", "ADDRESS","name", "twit","twithndlbankc", "hndl", "twit_hndl_banka","twit_hndl_bankc", "banka"))
+  corpus &lt;- tm_map(corpus, stripWhitespace)
+  corpus &lt;- tm_map(corpus, removePunctuation)
+  corpus &lt;- tm_map(corpus, removeNumbers)
+  corpus &lt;- tm_map(corpus, removeWords, stopwords("english"))
+
+  dtm &lt;- DocumentTermMatrix(corpus)
+  tdm &lt;- TermDocumentMatrix(corpus)
+
+  freq &lt;- colSums(as.matrix(dtm))   
+  length(freq)   
+  ord &lt;- order(freq)   
+  m &lt;- as.matrix(dtm)   
+  dim(m)   
+
+  freq &lt;- colSums(as.matrix(dtm))   
+  freq  
+  dtms &lt;- removeSparseTerms(dtm, 0.25) # Prepare the data (max 15% empty space)   
+  freq &lt;- colSums(as.matrix(dtm)) # Find word frequencies   
+  dark2 &lt;- brewer.pal(6, "Dark2")   
+  wordcloud(names(freq), freq, max.words=150, rot.per=0.1, colors=dark2)  
+}
+</code></pre>
+
+<p><img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot.png" alt="">
+<img src="http://carvalhodeoliveiral.students.cofc.edu/pictures/Rplot02.png" alt=""></p>
 
 <h2>
 <a id="the-analysis-could-be-better" class="anchor" href="#the-analysis-could-be-better" aria-hidden="true"><span class="octicon octicon-link"></span></a>The analysis could be better?</h2>
@@ -224,8 +244,6 @@ For example:</p>
 </code></pre>
 
 <p>Our current code would probably treat that as an irrelevant comment, since you have a negative word (not) and a positive word (good), but if we have used some libraries that treated the comments and words as vectors, the good analysis would give us back a bigger vector that would related the word “not” and the word “good”, and it would understand that the combination of those two is a negative thing.</p>
-
-<hr>
       </section>
 
     </div>
